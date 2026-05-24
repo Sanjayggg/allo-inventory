@@ -1,4 +1,5 @@
 import CheckoutClient from "./CheckoutClient";
+
 async function getReservation(id: string) {
   const res = await fetch(
     `http://localhost:3000/api/reservations/${id}`,
@@ -17,40 +18,21 @@ export default async function CheckoutPage({
 }) {
   const { id } = await params;
 
-  const reservation =
-    await getReservation(id);
+  const reservation = await getReservation(id);
 
   return (
     <main style={{ padding: "20px" }}>
       <h1>Reservation Checkout</h1>
 
-      <p>
-        Reservation ID:
-        {" "}
-        {reservation.id}
-      </p>
+      <p>Reservation ID: {reservation.id}</p>
 
-      <p>
-        Product:
-        {" "}
-        {reservation.productId}
-      </p>
+      <p>Product: {reservation.productId}</p>
 
-      <p>
-        Warehouse:
-        {" "}
-        {reservation.warehouseId}
-      </p>
+      <p>Warehouse: {reservation.warehouseId}</p>
 
-      <p>
-        Quantity:
-        {" "}
-        {reservation.quantity}
-      </p>
+      <p>Quantity: {reservation.quantity}</p>
 
-      <CheckoutClient
-  reservation={reservation}
-/>
+      <CheckoutClient reservation={reservation} />
     </main>
   );
 }

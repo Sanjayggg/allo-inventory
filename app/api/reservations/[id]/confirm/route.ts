@@ -3,9 +3,9 @@ import { prisma } from "../../../../../lib/prisma";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await context.params;
 
   try {
     const reservation = await prisma.reservation.findUnique({

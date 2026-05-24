@@ -3,9 +3,9 @@ import { prisma } from "../../../../../lib/prisma";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await context.params;
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -48,12 +48,8 @@ export async function POST(
 
     if (!result) {
       return NextResponse.json(
-        {
-          error: "Reservation not found",
-        },
-        {
-          status: 404,
-        }
+        { error: "Reservation not found" },
+        { status: 404 }
       );
     }
 
@@ -62,13 +58,8 @@ export async function POST(
     console.error(error);
 
     return NextResponse.json(
-      {
-        error:
-          "Failed to release reservation",
-      },
-      {
-        status: 500,
-      }
+      { error: "Failed to release reservation" },
+      { status: 500 }
     );
   }
 }
