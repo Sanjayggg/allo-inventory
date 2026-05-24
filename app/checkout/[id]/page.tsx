@@ -2,7 +2,7 @@ import CheckoutClient from "./CheckoutClient";
 
 async function getReservation(id: string) {
   const res = await fetch(
-    `http://localhost:3000/api/reservations/${id}`,
+   `${process.env.NEXT_PUBLIC_APP_URL}/api/reservations/${id}`,
     {
       cache: "no-store",
     }

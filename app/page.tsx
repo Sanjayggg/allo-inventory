@@ -1,16 +1,15 @@
-async function getProducts() {
-  const res = await fetch(
-    "http://localhost:3000/api/products",
-    {
-      cache: "no-store",
-    }
-  );
-
-  return res.json();
-}
+import { prisma } from "../lib/prisma";
 
 export default async function Home() {
-  const products = await getProducts();
+  const products = await prisma.product.findMany({
+    include: {
+      inventories: {
+        include: {
+          warehouse: true,
+        },
+      },
+    },
+  });
 
   return (
     <main style={{ padding: "20px" }}>
@@ -33,50 +32,37 @@ export default async function Home() {
 
           {product.inventories.map(
             (inventory: any) => (
-              <div
-                key={inventory.id}
-              >
+              <div key={inventory.id}>
                 <p>
-                  Warehouse:
-                  {" "}
-                  {
-                    inventory
-                      .warehouse
-                      .name
-                  }
+                  Warehouse:{" "}
+                  {inventory.warehouse.name}
                 </p>
 
                 <p>
-                  Total Units:
-                  {" "}
-                  {
-                    inventory.totalUnits
-                  }
+                  Total Units:{" "}
+                  {inventory.totalUnits}
                 </p>
 
                 <p>
-                  Reserved:
-                  {" "}
-                  {
-                    inventory.reservedUnits
-                  }
+                  Reserved:{" "}
+                  {inventory.reservedUnits}
                 </p>
 
                 <p>
-                  Available:
-                  {" "}
+                  Available:{" "}
                   {inventory.totalUnits -
                     inventory.reservedUnits}
                 </p>
+
                 <button
-  style={{
-    padding: "8px 12px",
-    marginTop: "10px",
-    cursor: "pointer",
-  }}
->
-  Reserve
-</button>
+                  style={{
+                    padding: "8px 12px",
+                    marginTop: "10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reserve
+                </button>
               </div>
             )
           )}
