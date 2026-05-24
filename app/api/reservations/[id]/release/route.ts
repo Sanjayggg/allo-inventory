@@ -8,43 +8,45 @@ export async function POST(
   const { id } = await context.params;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const reservation = await tx.reservation.findUnique({
-        where: { id },
-      });
-
-      if (!reservation) {
-        return null;
-      }
-
-      if (reservation.status !== "PENDING") {
-        throw new Error(
-          "Reservation already processed"
-        );
-      }
-
-      await tx.inventory.updateMany({
-        where: {
-          productId: reservation.productId,
-          warehouseId: reservation.warehouseId,
-        },
-        data: {
-          reservedUnits: {
-            decrement: reservation.quantity,
-          },
-        },
-      });
-
-      const updatedReservation =
-        await tx.reservation.update({
+    const result = await prisma.$transaction(
+      async (tx: any) => {
+        const reservation = await tx.reservation.findUnique({
           where: { id },
+        });
+
+        if (!reservation) {
+          return null;
+        }
+
+        if (reservation.status !== "PENDING") {
+          throw new Error(
+            "Reservation already processed"
+          );
+        }
+
+        await tx.inventory.updateMany({
+          where: {
+            productId: reservation.productId,
+            warehouseId: reservation.warehouseId,
+          },
           data: {
-            status: "RELEASED",
+            reservedUnits: {
+              decrement: reservation.quantity,
+            },
           },
         });
 
-      return updatedReservation;
-    });
+        const updatedReservation =
+          await tx.reservation.update({
+            where: { id },
+            data: {
+              status: "RELEASED",
+            },
+          });
+
+        return updatedReservation;
+      }
+    );
 
     if (!result) {
       return NextResponse.json(
